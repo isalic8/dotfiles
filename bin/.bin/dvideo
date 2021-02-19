@@ -1,0 +1,7 @@
+#!/bin/sh
+# Dmenu script to search and run a video file
+# The script calls for an enviromental variable called "VIDEOS". Export this variable and point it to the parent directory of all your video files/folders
+
+chosen=$(find $VIDEOS | cut -d'/' -f5- | dmenu -i -p 'Enter video name' -l 30 -nb '#222222' -nf '#bbbbbb' -sb '#924441' -sf '#eeeeee')
+[ -z "$chosen" ] && exit 1
+o "${VIDEOS}/${chosen}"

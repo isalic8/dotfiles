@@ -1,0 +1,17 @@
+#!/bin/sh
+#Retrieves videos from youtubers I watch
+
+# Luke Smith
+cd $VIDEOS/LukeSmith && youtube-dl -i https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA
+
+# Brodie Robertson
+cd $VIDEOS/BrodieRobertson && youtube-dl -i https://www.youtube.com/user/OmegaDungeon
+
+# Distrotube
+cd $VIDEOS/DistroTube && youtube-dl -i -f 247+251 https://www.youtube.com/channel/UCVls1GmFKf6WlTraIb_IaJg
+
+# Globletu
+cd $VIDEOS/Gotbletu && youtube-dl -i -f 247+251 https://www.youtube.com/user/gotbletu/videos
+
+# Mental Outlaw
+cd $VIDEOS/MentalOutlaw && youtube-dl -i -f 247+251 https://www.youtube.com/user/MentalOutlawStudios/videos

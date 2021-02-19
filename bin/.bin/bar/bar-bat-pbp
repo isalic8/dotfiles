@@ -1,0 +1,12 @@
+#!/bin/sh
+
+for battery in /sys/class/power_supply/cw2015-battery/; do
+	status=$(cat $battery/status)
+	capacity=$(cat "$battery"/capacity 2>/dev/null || break)
+	case "$status" in
+		Discharging) echo -n ": ${capacity}%" ;;
+		Full) echo -n ": ${capacity}%" ;;
+		Charging) echo -n ": ${capacity}%" ;;
+		Unknown) echo -n ": ${capacity}%";;
+	esac
+done

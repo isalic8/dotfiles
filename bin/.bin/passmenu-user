@@ -1,0 +1,6 @@
+#!/bin/sh
+# Lazy script to output passwd user name
+
+base=$(echo $(find $HOME/.password-store/ | grep -Ev "./$|.gpg-id" | awk -F '/' '{print $NF}') | tr ' ' '\n' | dmenu -p "USERNAME")
+username=${base%%.gpg}
+echo $username | cut -d '-' -f2 | xsel -ib

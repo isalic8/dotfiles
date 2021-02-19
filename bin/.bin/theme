@@ -1,0 +1,16 @@
+#!/bin/sh
+
+ln -f -t ~/.config/polybar ~/.config/polybar/themes/$1/*
+
+case "$1" in
+	verbose)
+		bspc config window_gap 0
+		bspc config top_padding 0
+		;;
+	minimal)
+		bspc config window_gap 0
+		bspc config top_padding 30
+		bspc config bottom_padding 0
+		;;
+esac
+launch-polybar.sh bar

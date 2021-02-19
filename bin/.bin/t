@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#urxvt -fn 'xft:TerminessTTF Nerd Font Mono:pixelsize=20' $@
+xterm -fn 'xft:TerminessTTF Nerd Font Mono:pixelsize=20' -ls -xrm 'XTerm*selectToClipboard:true' $@

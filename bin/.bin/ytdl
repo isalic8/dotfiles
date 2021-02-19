@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case "$1" in
+	# Try to download videos in 720p. Revert to best video if not possible.
+	vid|video|v|mp4)
+		youtube-dl -f 247+251 "$2" || \
+			youtube-dl -f 720p "$2" || \
+			youtube-dl -f 'bestvideo+bestaudio/bestvideo+bestaudio' --merge-output-format mp4 "$2"
+		;;
+	a|audio|mp3)
+		youtube-dl --extract-audio --audio-format mp3 $2
+		;;
+esac

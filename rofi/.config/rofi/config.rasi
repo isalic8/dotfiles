@@ -1,0 +1,5 @@
+configuration {
+	modi: "window,drun,ssh,combi";
+	theme: "custom.rasi";
+	combi-modi: "run,ssh";
+}

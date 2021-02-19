@@ -1,0 +1,18 @@
+#!/bin/bash
+# Opens files
+
+case "$1" in
+	*.pdf) setsid $READER "$1" &;;
+	*.epub) setsid FBReader "$1" &;;
+	*.jpg|*.jpeg|*.png) setsid feh --zoom 50% "$1" &;;
+	#*.avi|*.mp4|*.wmv|*.dat|*.3gp|*.ogv|*.mkv|*.mpg|*.mpeg|*.vob|*.m2v|*.mov|*.webm|*.ts|*.mts|*.m4v) setsid ffplay -vf "drawtext=text='%{pts\:hms}':box=1:x=(w-tw)/2:y=h-(2*lh)" "$1" &;;
+	*.avi|*.mp4|*.wmv|*.dat|*.3gp|*.ogv|*.mkv|*.mpg|*.mpeg|*.vob|*.m2v|*.mov|*.webm|*.ts|*.mts|*.m4v|*.gif) setsid mpv "$1" &;;
+	*.mp3|*.flac) setsid $TERMINAL -e mpv "$1" &;;
+	*.docx|*.doc|*.rtf|*.pptx) setsid libreoffice "$1" &;;
+	*.exe)
+		read -p "Wine prefix: " -ei "$HOME/.wine" prefix
+		read -p "Wine arch: " -ei "win32" arch
+		WINEPREFIX="$prefix" WINEARCH="$arch" wine "$1" &
+		;;
+	*) setsid $TERMINAL -e $EDITOR "$1" &;;
+esac

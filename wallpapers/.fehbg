@@ -1,0 +1,2 @@
+#!/bin/sh
+feh --no-fehbg --bg-fill '/home/anon/.dotfiles/wallpapers/.local/share/wallpapers/mountains.jpeg' 

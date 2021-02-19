@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# It compiles notes
+# https://unixfandom.com/guides/linux-notes.html
+
+course="$1"
+chapter="$2"
+
+function chapterCompile() {
+	# If reader variable not set, set the pdf reader to zathura
+	[ -z "$READER" ] && READER=zathura
+
+	# Removing file extension from note.md
+	filename="${chapter%.md}"
+
+	# Compiling it with pandoc. Added fancy colors with Ansi escape codes
+	printf "\e[0;31mCOMPILING:\e[0m \e[0;33m$course/$chapter\e[0m\n\n"
+	pandoc -s -o /tmp/$filename.pdf $NOTES/"$course"/"$chapter" -f markdown+implicit_figures
+	printf "\e[0;31mDONE!\e[0m\n\n"
+
+	# Prompting user if he want's to open note.pdf
+	printf "\e[0;32mOpen $filename.pdf? \e[0m"
+	read ans
+	case $ans in
+		[yY][eE][sS]|[yY]) $READER /tmp/$filename.pdf;;
+		[nN][oO]|[nN]) : ;;
+		*) printf "Invalid input\n";;
+	esac
+}
+
+function courseCompile {
+	# Gets a list of our notes and puts them into one line
+	# Removes index.md, since this is used for vim wiki and not useful in a pdf
+	notesList=$(find $NOTES/$course/ -iname "*.md" | grep -E -v "index.md" | sort | tr '\n' ' ')
+
+	# Compiling it with pandoc. Added fancy colors with Ansi escape codes
+	printf "\e[0;31mCOMPILING:\e[0m \e[0;33m$course\e[0m\n\n"
+	pandoc -s -o /tmp/$course.pdf $notesList -f markdown+implicit_figures
+	printf "\e[0;31mDONE!\e[0m\n\n"
+
+	# Prompting user if he want's to open course.pdf
+	printf "\e[0;32mOpen $course.pdf? \e[0m"
+	read ans
+	case $ans in
+		[yY][eE][sS]|[yY]) $READER /tmp/$course.pdf;;
+		[nN][oO]|[nN]) : ;;
+		*) printf "Invalid input\n";;
+	esac
+}
+
+if [ -z "$chapter" ] && [ ! -z "$course" ] ; then
+	courseCompile
+elif	[ ! -z "$chapter" ]; then
+	chapterCompile
+else
+	echo "Syntax: command <course> [chapter]"
+fi

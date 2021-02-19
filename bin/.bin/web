@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ ! -z "$1" ]; then
+	read -p "Use tor? [Y/n]: " yn
+	case $yn in
+		[yY][eE][sS]|[yY]) torsocks w3m "$1" ;;
+		[nN][oO]|[nN]) w3m "$1" ;;
+		*) torsocks w3m "$1"  ;;
+	esac
+else
+	read -p "Use tor? [Y/n]: " yn
+	case $yn in
+		[yY][eE][sS]|[yY]) torsocks w3m $HOME/.w3m/index.html ;;
+		[nN][oO]|[nN]) w3m $HOME/.w3m/index.html ;;
+		*) torsocks w3m $HOME/.w3m/index.html ;;
+	esac
+fi

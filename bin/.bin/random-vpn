@@ -1,0 +1,16 @@
+#!/bin/sh
+# Connect to random vpn
+
+#file=$(find /etc/openvpn/client | grep -E *.ovpn | shuf -n 1)
+#sudo openvpn --config "$file" --auth-user-pass "/etc/openvpn/client/pass.txt"
+file=$(sudo find /etc/wireguard | grep -E *.conf | shuf -n 1)
+file=${file%.conf}
+file=$(basename $file)
+
+for vpn in $(ip a | grep -Eo "mullvad.*:" | tr ':' ' ' | head -n1)
+do
+	wg-quick down $vpn
+done
+#sudo wg-quick down $(ip a | grep -Eo "mullvad.*:" | tr ':' ' ' | head -n1)
+sudo wg-quick up $file
+

@@ -1,0 +1,7 @@
+source "`ueberzug library`" 
+
+ImageLayer 0< <(
+	ImageLayer::add [identifier]="example0" [x]="0" [y]="0" [width]="80" [height]="80" [path]="$1"
+	read
+)
+

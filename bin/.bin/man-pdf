@@ -1,0 +1,4 @@
+#!/bin/sh
+# Compile man to pdf
+
+man -t $1 | ps2pdf - > /tmp/man-pdf-temp.pdf && $READER /tmp/man-pdf-temp.pdf

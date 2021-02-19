@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Feed script a url or file location.
+# If an image, it will view in feh,
+# if a video or gif, it will view in mpv
+# if a music file or pdf, it will download,
+# otherwise it opens link in browser.
+
+# If no url given. Opens browser. For using script as $BROWSER.
+basedir="/tmp/media/"
+[ -z "$1" ] && { "$BROWSERCLI"; exit; }
+[ ! -d "$basedir" ] && mkdir -p "$basedir"
+
+case "$1" in
+	*mkv|*webm|*mp4|*youtube.com/watch*|*youtube.com/playlist*|*youtu.be*|*hooktube.com*|*bitchute.com*|*/t.co/*)
+		setsid -f mpv -quiet --ytdl-format='best[height<=480]/bestvideo[height<=480]+bestaudio' "$1" || notify-send 'Linkhandler' 'Error occured with link' ;;
+	*png|*jpg|*jpe|*jpeg|*gif)
+		#basename=$(echo "$1" | sed "s/.*\///")
+		#curl -s "$1" -o ${basedir}/${basename} && feh "${basedir}/${basename}"  >/dev/null 2>&1 &
+		feh "$1" &>/dev/null
+		;;
+	*mp3|*flac|*opus|*mp3?source*)
+		setsid -f tsp curl -LO "$1" >/dev/null 2>&1 ;;
+	*bit.ly*|*libsyn.com*)
+		url=$(/opt/unshorten-url/unshorten-url.js "$1" | cut -d' ' -f3)
+		setsid st -e mpv --quiet $url &
+		;;
+	*)
+		if [ -f "$1" ]; then "$TERMINAL" -e "$EDITOR" "$1"
+		else 
+			setsid st -e web "$1" &>/dev/null &
+		fi 
+		;;
+esac

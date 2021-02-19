@@ -1,0 +1,7 @@
+#!/bin/sh
+
+while true; do
+	xmodmap ~/.Xmodmap
+	setxkbmap -option caps:escape
+	sleep 5m
+done

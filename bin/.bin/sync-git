@@ -1,0 +1,76 @@
+#!/bin/sh
+# Sync my git files
+
+# Corrects for permission problem
+sudo chown -R $USER:$USER /opt
+
+# DWM
+printf "\e[0;31mDWM\e[0m\n"
+cd /opt/dwm
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# ST
+printf "\e[0;31mST\e[0m\n"
+cd /opt/st
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# DWMBLOCKS
+printf "\e[0;31mDWMBLOCKS\e[0m\n"
+cd /opt/dwmblocks/
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# INSTALLERS
+printf "\e[0;31mINSTALLERS\e[0m\n"
+cd /opt/installers
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# BOOTSTRAP
+printf "\e[0;31mBOOTSTRAP\e[0m\n"
+cd /opt/bootstrap
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# Website
+printf "\e[0;31mWEBSITE\e[0m\n"
+cd /opt/website/
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# WINDOWS BINARIES
+printf "\e[0;31mWINDOWS BINARIES\e[0m\n"
+cd /opt/windows-binaries/
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# PYTHON3 ENV
+printf "\e[0;31mPYTHON3 ENV\e[0m\n"
+cd /opt/env/
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# DOCUMENTS
+printf "\e[0;31mDOCUMENTS\e[0m\n"
+cd $HOME/dox
+git add .
+git commit -m "periodic commit"
+git push -u origin master
+
+# DOTFILES
+printf "\e[0;31mDOTFILES\e[0m\n"
+rm -rf ~/.w3m/cookie ~/.w3m/w3m*
+cd $HOME/.dotfiles
+git add .
+git commit -m "periodic commit"
+git push -u origin master

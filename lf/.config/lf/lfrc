@@ -1,0 +1,101 @@
+source ~/.config/lf/functions
+
+# Basic Settings
+set preview true
+set previewer ~/.config/lf/preview
+set ratios 1:2:3
+set hidden true
+set icons true
+set ignorecase true
+
+# Bindings
+map m
+map o
+map n
+map "'"
+map '"'
+map d
+map c
+map e
+map f
+
+# File editor
+map ee $$EDITOR "$f"
+
+# FS mount
+map mo fsmount
+map mu fsumount
+map me fseject
+
+# Git mappings
+map .gc git_commit
+map .gp git_push
+map .gl git_log
+
+# Archive Mappings
+map ad dd
+map az zip
+map at tar
+map ag targz
+map au unarchive
+
+# Trash Mappings
+map dd trash
+map tc clear_trash
+map tr restore_trash
+
+# Basic Functions
+map .. set hidden!
+map DD delete
+map du du
+map p paste
+map x cut
+map y copy
+map <enter> file_open
+map mf mkfile
+map mrf sudomkfile
+map md mkdir
+map ch chmod
+map bg setwallpaper
+map o. file_open
+map ow wine_open
+map ov vm_open
+map os shell_open
+map r rename
+map H top
+map L bottom
+map R reload
+map C clear
+map u unselect
+map f fuzzy_jump
+map - clear_image
+map n search-next
+map ,n search-next
+map sh $$SHELL
+
+# Movement
+map g/ cd /
+map ge cd /etc
+map gt cd /tmp
+map gM cd /mnt
+map gs cd /srv
+map gr. cd /run
+map grm cd /run/media/
+map go cd /opt
+map gm cd /media
+map gu. cd /usr
+map gus cd /usr/share
+map gl. cd ~/.local
+map gls cd ~/.local/share
+
+# Personal
+map gd. cd ~/dox
+map gdd cd ~/.dotfiles
+map gD cd ~/downloads
+map gp cd ~/pix
+map gH cd /media/hdd
+map gb cd ~/.bin
+map gw cd ~/.wine
+map gc cd ~/.config
+map gb. cd ~/.local/bin/
+map gtr cd ~/.local/trash/files

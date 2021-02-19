@@ -1,0 +1,4 @@
+#!/bin/sh
+# Portable method of yanking file 
+
+echo -n "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")" | DISPLAY=:0 xclip -selection clipboard

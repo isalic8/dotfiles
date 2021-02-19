@@ -1,0 +1,14 @@
+#!/bin/sh
+
+batteries=$(find -P /sys/class/power_supply/ | grep -iE "*bat*")
+
+for battery in $batteries; do
+	status=$(cat $battery/status)
+	capacity=$(cat "$battery"/capacity 2>/dev/null || break)
+	case "$status" in
+		Discharging) echo ": ${capacity}%" ;;
+		Full) echo ": ${capacity}%" ;;
+		Charging) echo ": ${capacity}%" ;;
+		Unknown) echo ": ${capacity}%";;
+	esac
+done

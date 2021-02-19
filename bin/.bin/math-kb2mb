@@ -1,0 +1,9 @@
+#!/bin/sh
+# Kilobytes to megabytes
+
+if [ -z "$1" ]; then 
+	echo "Argument required"
+else
+	sum=$(echo "$1 / 1024" | bc)
+	echo "${sum}Mb"
+fi

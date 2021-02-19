@@ -1,0 +1,41 @@
+#!/bin/sh
+#Edit config files
+config_list(){
+	cat <<OEM | grep -Ev ".git"
+$XDG_CONFIG_HOME/nvim/init.vim
+$HOME/.bashrc
+$(find $XDG_CONFIG_HOME/bash/)
+$(find $XDG_CONFIG_HOME/bin-config/)
+$(find $XDG_CONFIG_HOME/vifm/vifmrc)
+$(find $HOME/.w3m/cgi-bin/)
+$(find $XDG_CONFIG_HOME/polybar/)
+$HOME/.w3m/cgi-bin/keymap
+$HOME/.w3m/cgi-bin/config
+$XDG_CONFIG_HOME/sxhkd/sxhkdrc
+$XDG_CONFIG_HOME/bspwm/bspwmrc
+$XDG_CONFIG_HOME/mpv/mpv.conf
+$XDG_CONFIG_HOME/newsboat/config
+$XDG_CONFIG_HOME/newsboat/urls
+$XDG_CONFIG_HOME/picom/picom.conf
+$XDG_CONFIG_HOME/compton.conf
+$XDG_CONFIG_HOME/tmux/tmux.conf
+$XDG_CONFIG_HOME/zsh/.zshrc
+$XDG_CONFIG_HOME/zsh/.zshenv
+$XDG_CONFIG_HOME/zathura/zathurarc
+$XDG_CONFIG_HOME/openbox/rc.xml
+$HOME/.bashrc
+$HOME/.profile
+/etc/fstab
+/opt/bootstrap/packages-deb
+/opt/bootstrap/packages-arm64-deb
+/opt/bootstrap/bootstrap.sh
+$(find $HOME/.bin/)
+$(find /opt/installers/)
+OEM
+}
+file=$(config_list | grep -v .git |fzf --reverse --header="Edit config: ")
+
+case $file in
+	/etc/fstab) sudo $EDITOR $file ;;
+	*) $EDITOR $file ;;
+esac

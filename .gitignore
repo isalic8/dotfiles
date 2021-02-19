@@ -1,0 +1,10 @@
+nvim/.config/nvim/plugged/
+nvim/.config/nvim/autoload/
+nvim/.local/share/nvim/swap/
+nvim/.local/share/nvim/shada/
+zsh/.config/zsh/zcompdump
+w3m/.w3m/cookie
+w3m/.w3m/history
+w3m/.w3m/cookie
+scripts/.local/share
+wallpapers/local/share/wallpapers/walls

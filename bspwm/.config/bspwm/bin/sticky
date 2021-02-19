@@ -1,0 +1,4 @@
+#!/bin/sh
+
+NODE=$(bspc query -N -n)
+bspc node $NODE --flag sticky

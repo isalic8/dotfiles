@@ -1,0 +1,5 @@
+#!/bin/bash
+# Work around that fixes .fehbg from not being sourced in .xinitrc. 
+
+sleep 2s
+source ~/.fehbg

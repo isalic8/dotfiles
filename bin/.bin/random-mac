@@ -1,0 +1,12 @@
+#!/bin/sh
+#Changes your mac address
+
+[ -z $(command -v macchanger) ] && echo "Install macchanger. Exiting" && exit
+[ -z "$1" ] && echo "Specify interface name. Exiting" && exit
+
+interface="$1"
+sudo ip link set "$interface" down 
+sudo macchanger -r "$interface" down 
+sudo ip link set "$interface" up
+
+echo "MAC Address randomized"

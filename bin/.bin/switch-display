@@ -1,0 +1,20 @@
+#!/bin/sh
+# The original command was  a lot simpler, but I had to create a quick fix with my monitor not displaying properly. 
+
+
+intern=eDP-1
+extern=DP-1
+
+#if xrandr | grep "$extern disconnected"; then
+#    xrandr --output "$extern" --off --output "$intern" --auto
+#    nitrogen --restore
+#else
+#    xrandr --output "$intern" --off --output "$extern" --auto
+#    nitrogen --restore
+#fi
+
+xrandr --output "$extern" --off --output "$intern" --auto
+sleep 2s
+xrandr --output "$intern" --off --output "$extern" --auto
+nitrogen --restore
+

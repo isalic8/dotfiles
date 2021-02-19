@@ -1,0 +1,15 @@
+# Recording profiles
+"1080";-video_size 1920x1080 -framerate 25 -f x11grab -i :0.0+0,0 -c:v libx264 -preset ultrafast -c:a acc "$OUTPUT.mkv"
+"audio-usb-em";-f alsa -channels 1 -i hw:CARD=EarMicrophone -vn -ar 44100 -ac 2 -b:a 192k -c:v acc "$OUTPUT.mkv"
+#"cam";-f v4l2 -framerate 15 -i /dev/video3 -c:v libx264 -preset ultrafast
+
+# Compression profiles. CV=Video CI=Images
+#CV;"stuff"; $INPUT -vcodec libx265 -crf 20 $OUTPUT.avi
+#CV;"stuff"; -i $INPUT -b:v 1M -b:a 192k $OUTPUT.avi
+CV;"crf-uf";-i "$INPUT" -c:v libx264 -preset ultrafast -crf 22 -c:a copy "$OUTPUT.mp4"
+CV;"crf-f";-i "$INPUT" -c:v libx264 -preset fast -crf 22 -c:a copy "$OUTPUT.mp4"
+CV;"crf-s";-i "$INPUT" -c:v libx264 -preset slow -crf 22 -c:a copy "$OUTPUT.mp4"
+CV;"crf-vs";-i "$INPUT" -c:v libx264 -preset veryslow -crf 22 -c:a copy "$OUTPUT.mp4"
+CV;"vid2gif";-i "$INPUT" -vf fps=5,scale=1200:-1,smartblur=ls=-0.5,crop=iw:ih-2:0:0 "$OUTPUT.gif"
+CI;"slow";-i "$INPUT" -c:v libx264 -preset veryslow -crf 22 -c:a copy "$OUTPUT.mp4"
+#CA;"flac2mp3";-i -codec:a libmp3lame "$INPUT" -map_metadata 0 -id3v2_version 3 -write_id3v1 1 -map a:0 -b:a 320k "$OUTPUT.mp3"

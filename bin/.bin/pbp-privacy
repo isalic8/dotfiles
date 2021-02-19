@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cat <<OEM
+Logo+F10 Microphone 2 blinks=enabled, 3 blinks=disabled
+Logo+F11 WiFi Privacy switch 2 blinks=enabled, 3 blinks=disabled
+Logo+F12 Camera 2 blinks=enabled, 3 blinks=disabled 
+OEM

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+#sensors | awk 'NR==3 {print $2}'
+sensors  | grep temp1 | awk 'NR==1 {print $2}'
+

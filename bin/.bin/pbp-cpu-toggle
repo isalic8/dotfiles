@@ -1,0 +1,13 @@
+#!/bin/sh
+tempfile='/tmp/cpu-on.LKDXJ'
+if [ -f "$tempfile" ]; then
+	rm "$tempfile"
+	sudo sh -c "echo  0 > /sys/devices/system/cpu/cpu4/online"
+	sudo sh -c "echo  0 > /sys/devices/system/cpu/cpu5/online"
+	notify-send "CPU" "Cores disabled"
+else
+	touch "$tempfile"
+	sudo sh -c "echo  1 > /sys/devices/system/cpu/cpu4/online"
+	sudo sh -c "echo  1 > /sys/devices/system/cpu/cpu5/online"
+	notify-send "CPU" "Cores enabled"
+fi

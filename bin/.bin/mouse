@@ -1,0 +1,10 @@
+#!/bin/sh
+# Change mouse accel
+
+mouse_devices=$(xinput list | grep -Ei 'mouse|trackpoint|synaptics|2.4G')
+clear
+printf "$mouse_devices\n"
+read -p "Enter device ID: " mouse_id
+prop_id=$(xinput --list-props $mouse_id | grep -i "accel speed" | grep -iv "default" | awk '{ printf $4 }' | sed 's/(//g' | sed 's/)//g')
+read -p "Enter speed value: (neg1-1) " speed_factor
+xinput --set-prop "$mouse_id" "libinput Accel Speed" "$speed_factor"

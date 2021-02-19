@@ -1,0 +1,4 @@
+#!/bin/sh
+
+selection=$(dmenu -i -l 5 -nb \#000000 -nf \#F3E2A9 -sb \#2E2E2E < "$HOME/.w3m/cgi-bin/bookmarks.txt" | cut -d';' -f 2)
+echo "$selection" | xsel -b && notify-send "Bookmarks" "Url copied"

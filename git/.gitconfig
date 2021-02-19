@@ -1,0 +1,14 @@
+[user]
+	email = p
+	name = p
+[alias]
+	s = status
+	d = diff
+	c = clone
+	co = checkout
+	br = branch
+	last = log -1 HEAD
+	cane = commit --amend --no-edit
+	lo = log --oneline -n 10
+	pr = pull --rebase
+	prune = gc --aggressive --prune

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+MOUNT_PATH=/media/$USER/
+
+VOLUMES(){
+	lsblk -o name,uuid,fstype,mountpoint | grep -Ev '/|NAME'
+}
+
+VOLUMES_ENCRYPTED(){
+	VOLUMES | grep 'crypto_LUKS' | awk '{print $2}' | sed '/^$/d' | tr '\n' ' '
+}
+
+VOLUMES_MOUNTABLE(){
+	VOLUMES | grep -v 'crypto_LUKS' | awk '{print $2}' | sed '/^$/d' | tr '\n' ' '
+}
+
+while true; do
+	for VOLUME in $(VOLUMES_MOUNTABLE)
+	do
+		if [ -z "$VOLUME" ]; then
+			:
+		elif [ ! -d "$MOUNT_PATH/$VOLUME" ]; then
+			sudo chown -R anon:anon /media/anon/ && mkdir -p "$MOUNT_PATH/$VOLUME"
+			sudo mount UUID=$VOLUME $MOUNT_PATH/$VOLUME
+		else
+			sudo mount UUID=$VOLUME $MOUNT_PATH/$VOLUME
+		fi
+	done
+	sleep 3s
+done
+

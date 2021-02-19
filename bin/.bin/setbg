@@ -1,0 +1,11 @@
+#!/bin/sh
+
+case $1 in
+	land)wallDir="$XDG_DATA_HOME/wallpapers/landscapes";;
+	retro)wallDir="$XDG_DATA_HOME/wallpapers/retro";;
+	*) echo "Fail. Add directory to script.";;
+esac
+
+wal -i "$wallDir" & cat ~/.fehbg && pidof dwm >/dev/null 
+sleep 1s
+xdotool key alt+F5

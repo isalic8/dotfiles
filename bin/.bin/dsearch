@@ -1,0 +1,5 @@
+#!/bin/sh
+# Search stuff with your browser
+
+search=$(find "$XDG_CONFIG_HOME/surfraw/elvi" | awk -F'/' '{print $NF}' | dmenu -i -p 'Search: ' -nb '#222222' -nf '#bbbbbb' -sb '#924441' -sf '#eeeeee')
+surfraw $search

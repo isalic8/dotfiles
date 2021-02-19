@@ -1,0 +1,7 @@
+#!/bin/sh
+
+while true; do
+	#sudo rc-service tlp restart &>/dev/null
+	sudo systemctl restart tlp &>/dev/null
+	sleep 2m
+done

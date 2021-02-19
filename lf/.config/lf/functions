@@ -1,0 +1,288 @@
+# Custom Functions
+cmd mkdir ${{
+  printf "Directory Name: "
+  read ans
+  mkdir $ans
+}}
+
+cmd mkfile ${{
+  printf "File Name: "
+  read ans
+  $EDITOR $ans
+}}
+
+cmd chmod ${{
+  printf "Mode Bits: "
+  read ans
+
+  for file in "$fx"
+  do
+    sudo chmod $ans $file
+  done
+}}
+
+cmd dd ${{
+	lsblk
+	printf "Enter devices: "
+	read dev
+	printf "Enter blocksize (bs=4M): "
+	read bs
+	[ -z "$bs"] && bs=4M 
+	printf "\n\ndd if=$f of=$dev bs=${bs} conv=fsync status=progress\n"
+	printf "\nDoes this look correct (y/n)? "
+	read ans
+	case $ans in
+		[yY][eE][sS]|[yY]) sudo dd if=$f of=$dev bs=${bs} conv=fsync status=progress ; sync ;;
+		[nN][oO]|[nN]) continue;;
+		*) printf "Invalid input\n";;
+	esac
+	printf "\nDONE\n"
+	read
+
+}}
+
+cmd fsmount ${{
+	if [ ! -d "$f" ]; then 
+		read -p "Error: Mountpoint is not a directory"
+		exit
+	fi
+	mountable=$(lsblk -lp | grep -E "part $ |crypt $" | awk '{print $1, "(" $4 ")"}')
+	[[ "$mountable" = "" ]] && exit
+	echo "$mountable"
+	read -p "Drive: " -ei "/dev/" chosen
+	[ -z "$chosen" ] && exit 1
+	fstype=$(lsblk $chosen -o fstype | tail -n1)
+	if [ "$fstype" = "crypto_LUKS" ]; then
+		echo
+		echo "Unencrypting drive"
+		echo "=================="
+		read -p "Enter mapper name: " -ei "cryptsda" mapper
+		sudo cryptsetup luksOpen "$chosen" "$mapper"
+		sudo mount /dev/mapper/$mapper "$f"
+	else
+		sudo mount "$chosen" "$f"
+	fi
+}}
+
+cmd fsumount ${{
+	sudo umount "$f"
+}}
+
+cmd fseject ${{
+	lsblk -o name,size,type,mountpoint
+	read -p "Eject: " drive
+	sudo eject $drive
+}}
+
+cmd sudomkfile ${{
+  printf "File Name: "
+  read ans
+  sudo $EDITOR $ans
+}}
+
+cmd setwallpaper %feh --bg-scale "$f"
+
+cmd fuzzy_jump ${{
+  res="$(find . -maxdepth 7 | fzf --reverse --header='Jump to location')"
+  if [ -f "$res" ]; then
+    cmd="select"
+  elif [ -d "$res" ]; then
+    cmd="cd"
+  fi
+  lf -remote "send $id $cmd \"$res\""
+}}
+
+cmd broot_jump ${{
+  f=$(mktemp)
+  res="$(broot --outcmd $f && cat $f | sed 's/cd //')"
+  rm -f "$f"
+  if [ -f "$res" ]; then
+    cmd="select"
+  elif [ -d "$res" ]; then
+    cmd="cd"
+  fi
+  lf -remote "send $id $cmd \"$res\""
+}}
+
+cmd wine_open ${{
+	read -p "Wine prefix: " -ei "~/.wine" prefix
+	WINEPREFIX="$prefix"
+	read -p "Wine architecture: " -ei "win32" arch
+	WINEARCH=$arch
+	setsid wine "$f"
+}}
+
+cmd shell_open ${{
+	setsid bash -c "exec "$f" &"
+}}
+
+cmd vm_open ${{
+	read -p "TTY w/ telnet [yn] " -ei "no" ans
+	case $ans in
+		[yY][eE][sS]|[yY]) 
+			#tty="-monitor telnet:127.0.0.1:55555,server,nowait"
+			#tty="-nographic tcp::4441,server,telnet,wait"
+			#tty="-nographic"
+			#read -p "CDROM boot [yn]: " -ei "no" ans
+			#case $ans in
+				#[yY][eE][sS]|[yY]) cdrom="-boot d -cdrom " ;;
+				#[nN][oO]|[nN]) : ;;
+			#*) printf "Invalid input\n";;
+			#esac
+
+			#read -p "Command: " -ei "setsid qemu-system-x86_64 -enable-kvm -cpu host -m 4000 -net user,smb=$HOME -net nic,model=virtio -hda "$f" $tty $cdrom" command
+			#$command
+			#printf "\nRun telnet 4441 to access the vm\n\n"
+			#read -p "PRESS ANY KEY TO CONTINUE"
+			:
+			;;
+		[nN][oO]|[nN]) 
+			read -p "Use localhost VNC [yn]: " -ei "no" ans
+			case $ans in
+				[yY][eE][sS]|[yY]) vnc="-vnc localhost:0 " ;;
+				[nN][oO]|[nN]) : ;;
+			*) printf "Invalid input\n";;
+			esac
+
+			read -p "CDROM boot [yn]: " -ei "no" ans
+			case $ans in
+				[yY][eE][sS]|[yY]) cdrom="-boot d -cdrom " ;;
+				[nN][oO]|[nN]) : ;;
+			*) printf "Invalid input\n";;
+			esac
+
+			read -p "Ram (mb) [yn]: " -ei "4000" mem
+
+			read -p "Command: " -ei "sudo setsid qemu-system-x86_64 -enable-kvm -cpu host -m $mem -net user,smb=$HOME -net nic,model=virtio $vnc -hda "$f" $cdrom" command
+			$command &
+			;;
+	*) printf "Invalid input\n";;
+	esac
+}}
+
+cmd vm_create ${{
+	read -p "Command: " -ei "qemu-img create -f qcow2 " ans
+	$ans
+}}
+
+# Git
+cmd git_commit ${{
+	read -p "Commit msg: " -ei "Periodic commit" ans
+	printf "Look good?\n\n(${ans})\n\n: "
+	read -p "Answer [y/n]: " yn
+	case $yn in
+		[yY][eE][sS]|[yY]) : ;;
+		[nN][oO]|[nN]) echo "EXITING. NO COMMITS MADE." ; read ; exit;;
+	*) printf "Invalid input\n";;
+	esac
+
+	git add .
+	git commit -m "$ans"
+	read -p "PRESS ENTER TO CONTINUE"
+}}
+
+cmd git_push ${{
+	read -p "Remote: " -ei "origin"
+	read -p "Branch: " -ei "master"
+	git push -u origin master
+	read -p "PRESS ENTER TO CONTINUE"
+}}
+
+cmd git_pull ${{
+	git pull
+	read -p "PRESS ENTER TO CONTINUE"
+}}
+
+cmd git_reset ${{
+	read -p "Branch: " branch
+	read -p "Are you sure you want to HARD reset to $branch" yn
+	case $yn in
+		[yY][eE][sS]|[yY]) git reset --hard $branch;;
+		[nN][oO]|[nN]) read -p "CANCELLED. PRESS ENTER TO EXIT" ; exit;;
+		*) printf "Invalid input\n";;
+	esac
+}}
+
+cmd git_log ${{
+	git log
+}}
+
+# Archive bindings
+	cmd unarchive ${{
+	printf "UNARCHIVING" ; x "$f" ; echo ; read -p "PRESS ENTER TO CONTINUE"
+}}
+
+# File editor/reader
+cmd file_open ${{
+  case "$f" in
+    *.pdf) setsid zathura "$f" &;;
+    *.epub) setsid FBReader "$f" &;;
+    *.jpg|*.jpeg|*.png) setsid sxiv "$f" &;;
+    *.mkv|*.mp4|*.avi|*.mov|*.webm) setsid mpv --really-quiet "$f" &;;
+    *.mp3) $TERMINAL -e mpv "$f" &;;
+    *.docx|*.doc|*.rtf) setsid libreoffice "$f" &;;
+    *) setsid $EDITOR "$f" &;;
+  esac
+}}
+
+# Download
+cmd downloader ${{
+	echo "[1] youtube-dl MP4 720p"
+	echo "[2] youtube-dl MP3"
+	echo "[3] curl"
+	echo "[4] wget"
+	echo "[5] git"
+	read -p "Selection: " ans
+	case $ans in
+		1) 
+			read -p "URL: " -ei "youtube-dl -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4 " command
+			$command
+			read -p "PRESS ENTER TO CONTINUE"
+			;;
+		2)
+			read -p "URL: " -ei "youtube-dl --extract-audio --audio-format mp3 " command
+			$command
+			read -p "PRESS ENTER TO CONTINUE"
+			;;
+		3) 
+			read -p "URL: " -ei "curl " command
+			$command
+			read -p "PRESS ENTER TO CONTINUE"
+			;;
+		4) 
+			read -p "URL: " -ei "wget --user-agent=' Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36' " command
+			$command
+			read -p "PRESS ENTER TO CONTINUE"
+			;;
+		5) 
+			read -p "URL: " -ei "git clone " command
+			$command
+			read -p "PRESS ENTER TO CONTINUE"
+			;;
+		*) echo Invalid input ; read ; exit;;
+	esac
+}}
+
+cmd make ${{
+	sudo make clean install
+	read -p "PRESS ENTER TO CONTINUE"
+}}
+cmd du %du -hd0 "$f"
+cmd zip ${{
+	printf "ARCHIVING" ; zip -r "$f" "$f" ; echo ; read -p "PRESS ENTER TO CONTINUE"
+}}
+
+cmd tar ${{
+	printf "ARCHIVING" ; tar cvf "$f.tar" "$f" ; echo ; read -p "PRESS ENTER TO CONTINUE"
+}}
+
+
+cmd targz ${{
+	printf "ARCHIVING" ; tar cvzf "$f.tar.gz" "$f" ; echo ; read -p "PRESS ENTER TO CONTINUE"
+}}
+
+cmd tarbz2 ${{
+	printf "ARCHIVING" ; tar cjvf "$f.tar.bz2" "$f" ; echo ; read -p "PRESS ENTER TO CONTINUE"
+}}
+
+cmd clear_image %~/.config/lf/image clear

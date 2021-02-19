@@ -1,0 +1,164 @@
+#!/bin/bash
+profile_list="$HOME/.config/bin-config/rec-config"
+
+usage(){
+cat <<OEM
+-s 					Install script dependencies
+-l 					List capture devices
+-f /dev/video0		List available formats for an input device
+-P 					List preconfigured recording profiles
+-C 					List preconfigured conversion profiles 
+-p 					Use a preconfigured profile to record
+-c 					Use a preconfigured profile to convert/compress a video/image
+-d [IMAGE|VIDEO] 	Output an image or video to dummy webcam device
+
+[SYNTAX]
+commmand profile_name [output.mp4|output.wav]
+OEM
+}
+
+setup(){
+	DISTRO=$(lsb_release  -i | grep -iEo "debian|arch")
+	case $DISTRO in
+		[Dd]ebian) sudo apt update && sudo apt install -y linux-headers-$(uname -r) build-essential;;
+		[Aa]rch) uname -r && sudo pacman -Sy linux-headers base-devel;;
+	esac
+	dir=$(mktemp -d)
+	cd $dir
+	git clone https://github.com/umlaeute/v4l2loopback.git
+	cd v4l2loopback
+	sudo make install
+	sudo cp v4l2loopback.ko /lib/modules/$(uname -r)
+	sudo depmod -a
+	sudo modprobe v4l2loopback
+}
+
+list_devices(){
+	# Mind the ansi escape codes. They make things colorful.
+	printf "\e[0;33mVideo devices:\e[0m\n"
+	v4l2-ctl --list-devices | grep -C 3 -E --color "/dev/.*"
+	printf "\e[0;33mAlsa Devices:\e[0m\n"
+	arecord -l | grep -C 3 -E --color "card .."
+	printf "\n\e[0;33mPulse Devices:\e[0m\n"
+	pactl list short sources | grep -E "^.|output|input" --color
+}
+
+list_formats(){
+	[ -z "$1" ] && printf "\e[0;31mNo device given\e[0m\n" && exit
+	ffmpeg -f v4l2 -list_formats all -i "$1"
+}
+
+list_profiles(){
+	sed -e '/#.*/d' -e '/^.$/d' -e '/^C.;/d' "$profile_list" | grep -Ei --color "\".*\""
+}
+
+list_conversion_profiles(){
+	sed -e '/#.*/d' -e '/^.$/d' -e '/^\".*;/d' "$profile_list" | grep -Ei --color "\".*\""
+}
+
+dummy_cam(){
+	# Checks if the v4l2loopback module is loaded. If not, load it.
+	# Also automatically grabs the dummy webcam device
+	[ -z "$1" ] && printf "\e[0;31mNo video/image file given\e[0m\n" && exit
+
+	if [ -z "$(lsmod | grep v4l2loopback)" ]; then
+		printf "\e[0;33mLoading v4l2loopback module:\e[0m\n"
+			sudo modprobe v4l2loopback 2>/dev/null 
+			case "$?" in
+				0)
+					printf "\e[0;33mMODULE LOADED:\e[0m\n"
+					;;
+				1)
+					printf "\e[0;31mMODULE NOT FOUND\e[0m\n"
+					printf "Run \e[0;36m$0 -s\e[0m to install the dependencies\n"
+					exit
+					;;
+			esac
+	fi
+
+	filetype=$(mimetype "$1" 2>/dev/null | grep -Eo "video|image" | sed 1q)
+	dummy_output=$(v4l2-ctl --list-devices | grep "Dummy video device" -A 1 | sed -n '2{p;q}')
+	printf "\e[1;33mUSING: $dummy_output\e[0m\n"
+	case "$filetype" in
+		image)
+			ffmpeg -framerate 1 -loop 1 -re -i "$1" -f v4l2 -vcodec rawvideo -pix_fmt yuv420p $dummy_output
+			;;
+		video)
+			ffmpeg -re -stream_loop -1 -i "$1" -f v4l2 $dummy_output
+			;;
+		*)
+			printf "\e[0;31mInvalid file. Must be an image or video\e[0m\n"
+			exit
+			;;
+	esac
+}
+
+profile_record(){
+	output="${2%.*}"
+	selection=$(grep "\"$1\"" "$profile_list" | sed -e '/#.*/d' -e '/^C.*/d')
+	[ -z "$selection" ] && printf "\e[0;31mINVALID PROFILE NAME\e[0m\n" && exit
+	args=$(echo -n $selection | cut -d';' -f2 | sed -e "s;\$INPUT;$input;g" -e "s;\$OUTPUT;$output;g")
+	sh -c "ffmpeg $args"
+}
+
+profile_conversion(){
+	# Uses mimetypes to parse the right conversion profile for video and image files respectively
+	input="$2"
+	output="${input%.*}"
+	[ ! -f "$input" ] && printf "\e[0;31mNO VALID INPUT FILE GIVEN\e[0m\n" && exit
+
+	filetype=$(mimetype "$input" | grep -Eo "video|image|audio" | sed 1q)
+	case $filetype in
+		image)
+			selection=$(grep "\"$1\"" "$profile_list" | sed -e '/#.*/d' -e '/^\".*/d' -e '/^CV.*/d' -e '/^CA.*/d')
+			[ -z "$selection" ] && printf "\e[0;31mINVALID IMAGE PROFILE\e[0m\n" && exit
+			args=$(echo -n $selection | cut -d';' -f3 | sed -e "s;\$INPUT;$input;g" -e "s;\$OUTPUT;$output;g")
+			;;
+		video)
+			selection=$(grep "\"$1\"" "$profile_list" | sed -e '/#.*/d' -e '/^\".*/d' -e '/^CI.*/d' -e '/^CA.*/d')
+			[ -z "$selection" ] && printf "\e[0;31mINVALID VIDEO PROFILE\e[0m\n" && exit
+			args=$(echo -n $selection | cut -d';' -f3 | sed -e "s;\$INPUT;$input;g" -e "s;\$OUTPUT;$output;g")
+			sh -c "ffmpeg $args"
+			;;
+		audio)
+			selection=$(grep "\"$1\"" "$profile_list" | sed -e '/#.*/d' -e '/^\".*/d' -e '/^CI.*/d' -e '/^CV.*/d')
+			[ -z "$selection" ] && printf "\e[0;31mINVALID AUDIO PROFILE\e[0m\n" && exit
+			args=$(echo -n $selection | cut -d';' -f3 | sed -e "s;\$INPUT;$input;g" -e "s;\$OUTPUT;$output;g")
+			sh -c "ffmpeg $args"
+			;;
+	esac
+}
+
+[ -z "$1" ] && usage && exit
+optstring="d:hCalsc:f:p:P"
+while getopts ${optstring} arg; do
+	case ${arg} in
+		l)
+			list_devices
+			;;
+		f)
+			list_formats "$OPTARG"
+			;;
+		p)
+			profile_record "$2" "$3"
+			;;
+		P)
+			list_profiles
+			;;
+		d)
+			dummy_cam "$OPTARG"
+			;;
+		c)
+			profile_conversion "$2" "$3"
+			;;
+		C)
+			list_conversion_profiles
+			;;
+		s)
+			setup
+			;;
+		?|h)
+			usage
+			;;
+	esac
+done

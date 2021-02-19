@@ -1,0 +1,5 @@
+#!/bin/sh
+# Play random video
+
+video=$(find $VIDEOS | shuf -n 1)
+o "$video"

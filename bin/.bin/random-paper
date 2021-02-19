@@ -1,0 +1,4 @@
+#!/bin/sh
+
+paper="$(find ~/.local/share/wallpapers/ | shuf -n 1)"
+feh --bg-fill "$paper"

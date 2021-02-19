@@ -1,0 +1,5 @@
+#!/bin/sh
+
+chosen=$(cat ~/.bin/unicode-text | dmenu -i -l 30 | cut -d ';' -f1 )
+[ -z "$chosen" ] && exit
+echo "$chosen" | tr -d '\n' | xclip -selection clipboard

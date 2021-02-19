@@ -1,0 +1,2 @@
+#!/bin/sh
+tmux new-session -s vpn -n vpn "random-vpn"

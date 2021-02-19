@@ -1,0 +1,7 @@
+" vim: filetype=vifm :
+" :com[mand][!] command_name action
+" The following macros can be used in a command
+source $XDG_CONFIG_HOME/vifm/options.vim
+source $XDG_CONFIG_HOME/vifm/icons.vim
+source $XDG_CONFIG_HOME/vifm/commands.vim
+source $XDG_CONFIG_HOME/vifm/fileopeners.vim

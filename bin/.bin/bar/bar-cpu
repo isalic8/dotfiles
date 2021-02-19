@@ -1,0 +1,9 @@
+#!/bin/bash
+read u1 s1 i1 <<< $(grep 'cpu ' /proc/stat | awk '{print $2" "$4" "$5}' )
+sleep 1
+read u2 s2 i2 <<< $(grep 'cpu ' /proc/stat | awk '{print $2" "$4" "$5}' )
+u=$(echo "scale=4;$u2-$u1" | bc)
+s=$(echo "scale=4;$s2-$s1" | bc)
+i=$(echo "scale=4;$i2-$i1" | bc)
+cpu=$(echo "scale=4;($u+$s)*100/($u+$s+$i)" | bc)
+echo -n "$(echo -n $cpu | cut -d'.' -f1)%"

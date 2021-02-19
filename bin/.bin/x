@@ -1,0 +1,18 @@
+#!/bin/sh
+# Extract script
+case "$1" in
+	*.zip) unzip "$1" ;;
+	*.tar.gz) tar -xzvf "$1" ;;
+	*.tar.bz2) tar -xjvf "$1" ;;
+	*.tar.xz) tar -xJvf "$1" ;;
+	*.tar.zst) tar -I zstd -xvf "$1" ;;
+	*.tar.lz) tar --lzip -xf "$1" ;;
+	*.tar) tar -xvf "$1" ;;
+	*.xz) xz -d "$1";;
+	*.gz) gzip -d "$1";;
+	*.bzip2|*.bz2) bzip2 -d "$1";;
+	*.7z|*.iso) 7z x "$1" ;;
+	*.lzma) xz -d --format=lzma "$1";;
+	*.rar) unrar x "$1";;
+	*) echo "Unsupported format" ;;
+esac

@@ -1,0 +1,22 @@
+#!/bin/sh
+# Use dmenu to mount drives quickly. This is a clone of lukesmiths dmenu mount script
+
+pgrep -x dmenu && exit
+
+mountable=$(lsblk -lp | grep "part $" | awk '{print $1, "(" $4 ")"}')
+[[ "$mountable" = "" ]] && exit
+chosen=$(echo "$mountable" | dmenu -i -p "Mount which drive?" -nb '#222222' -nf '#bbbbbb' -sb '#924441' -sf '#eeeeee' | awk '{print $1}')
+[ -z "$chosen" ] && exit 1
+#doas mount "$chosen" && exit 0
+
+# Change the line below to change which directories are listed for mounting
+
+dirs=$(find /mnt /media /home -type d -maxdepth 3 2> /dev/null)
+mountpoint=$(echo "$dirs" | dmenu -i -p "Type in mount point. " -nb '#222222' -nf '#bbbbbb' -sb '#924441' -sf '#eeeeee')
+[[ "$mountpoint" = "" ]] && exit 1 
+if [[ ! -d "$mountpoint" ]]; then
+	mkdiryn=$(echo -e "No\nYes" | dmenu -i -p "$mountpoint does not exist. Create it?" -nb '#222222' -nf '#bbbbbb' -sb '#924441' -sf '#eeeeee')
+	[[ "$mkdiryn" = "Yes" ]] && doas mkdir -p "$mountpoint"
+fi
+doas mount $chosen $mountpoint
+

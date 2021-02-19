@@ -1,0 +1,21 @@
+#!/bin/sh
+# Changes the volume for either pulsemixer or alsa. Sends notification
+
+PULSE=TRUE
+
+if [ "$PULSE" = "TRUE" ]; then
+	toggle(){ pulsemixer --toggle-mute; }
+	up(){ pulsemixer --change-volume +5; }
+	down(){ pulsemixer --change-volume -5; }
+else
+	toggle(){ amixer sset Master toggle; }
+	up(){ amixer sset Master 5%+; }
+	down(){ amixer sset Master 5%+; }
+fi
+
+case $1 in
+	toggle) toggle && notify-send -t 2000 "Volume $(pulsemixer --get-volume)" "Toggled Mute";;
+	up) up;;
+	down) down;;
+esac
+

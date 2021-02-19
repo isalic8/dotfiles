@@ -1,0 +1,49 @@
+#!/bin/sh
+# Sync my git files
+
+# Corrects for permission problem
+sudo chown -R $USER:$USER /opt
+
+# DWM
+cd /opt/dwm
+git pull
+
+# ST
+cd /opt/st
+git pull
+
+# SLSTATUS
+cd /opt/slstatus
+git pull
+
+# INSTALLERS
+cd /opt/installers
+git pull
+
+# BOOTSTRAP
+cd /opt/bootstrap
+git pull
+
+# UNIXFANDOM
+cd /opt/unixfandom
+git pull
+
+# PYENV
+cd /opt/pyenv
+git pull
+
+# EBOOKS
+cd /opt/ebooks
+git pull
+
+# DOCUMENTS
+cd $HOME/dox
+git pull
+
+# DOTFILES
+cd $HOME/.dotfiles
+git pull
+
+# NOTES
+cd $HOME/notes
+git pull

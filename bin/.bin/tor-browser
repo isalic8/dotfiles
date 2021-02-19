@@ -1,0 +1,5 @@
+#!/bin/sh
+# Little wrapper for running tor
+
+cd /opt/tor-browser_*/
+firejail --profile=/etc/firejail/tor-browser-en-us.profile ./start-tor-browser.desktop

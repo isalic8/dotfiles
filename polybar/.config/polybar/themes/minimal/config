@@ -1,0 +1,121 @@
+[colors]
+;background = ${xrdb:color0:#000000}
+;foreground = ${xrdb:color7:#F3E2A9}
+;foreground-alt = ${xrdb:color7:#222}
+;primary = ${xrdb:color1:#222}
+;secondary = ${xrdb:color2:#222}
+;alert = ${xrdb:color3:#222}
+
+background = xrdb:color0:#000000
+foreground = color7:#c6c6c6
+foreground-alt = color7:#222
+primary = color1:#222
+secondary = color2:#222
+alert = color3:#222
+
+
+[bar/bar]
+enable-ipc=true
+height = 27
+width = 100%
+border-size = 0
+border-color = ${colors.foreground}
+module-margin = 2
+;bottom = true
+tray-position = right
+tray-padding = 0
+
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 1
+
+padding=1
+font-0 = TerminessTTF Nerd Font Mono:pixelsize=13;1
+font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-2 = siji:pixelsize=10;1
+
+; Mpd
+modules-left = bspwm 
+modules-center = bat
+modules-right = time 
+
+scroll-up = bspwn-wsnext
+scroll-down = bspwn-wsprev
+
+wm-restack = bspwm
+override-redirect = false
+
+[module/bspwm]
+type = internal/bspwm
+format = <label-state>
+index-sort = true
+
+enable-click = true
+reverse-scroll = false
+
+label-focused = %name% 
+
+label-occupied = 
+
+label-empty = 
+
+[module/time]
+type = internal/date
+interval = 10
+format-margin = 0
+
+time = "%H:%M"
+date = "%a %d %b"
+
+label = %date%, %time%
+label-foreground = ${colors.foreground}
+label-background = ${colors.background}
+;label-padding = 2
+
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+;format-margin = 1
+format-volume = <ramp-volume> <label-volume>
+label-volume = %percentage:3:3%%
+format-volume-foreground = ${colors.foreground}
+format-volume-background = ${colors.background}
+format-volume-padding = 0
+use-ui-max = false
+interval = 5
+
+ramp-volume-0 = ""
+ramp-volume-1 = ""
+ramp-volume-2 = ""
+
+
+label-muted = " muted"   
+label-muted-background = ${colors.background}
+label-muted-foreground = ${colors.foreground}
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+pseudo-transparency = true
+
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+[module/bat]
+type = custom/script
+format-foreground = ${colors.foreground}
+;format-prefix = "📦 "
+format-underline = ${colors.primary}
+format-padding = 1
+label = "%output%"
+initial = 1
+interval = 30
+exec = bat
+; vim:ft=dosini

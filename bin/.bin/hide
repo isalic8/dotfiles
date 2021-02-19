@@ -1,0 +1,17 @@
+#!/bin/sh
+
+ids=$(wid  $(pgrep $1) | cut -d':' -f2)
+
+if [ -e /tmp/hidden-status ]; then
+	rm /tmp/hidden-status
+	for i in $ids
+	do
+		xdo show "$i"
+	done
+elif [ ! -e /tmp/hidden-status ]; then
+	touch /tmp/hidden-status
+	for i in $ids
+	do
+		xdo hide "$i"
+	done
+fi

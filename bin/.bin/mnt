@@ -1,0 +1,8 @@
+#!/bin/sh
+
+case "$1" in 
+	pi-tor) torsocks sshfs pi-tor:/hdd /media/hdd/ -C -o reconnect ;;
+	pi) sshfs pi:/hdd /media/hdd/ -o reconnect ;;
+	sd) sudo cryptsetup luksOpen /dev/mmcblk2p2 ldfadf 2>/dev/null || sudo cryptsetup luksOpen /dev/mmcblk1p2 ldfadf 2>/dev/null;;
+	*) echo "Invalid arguement"
+esac

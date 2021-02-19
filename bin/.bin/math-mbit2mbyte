@@ -1,0 +1,9 @@
+#!/bin/sh
+# Mbit to MBite
+
+if [ -z "$1" ]; then 
+	echo "Argument required"
+else
+	sum=$(echo "$1 * .125 " | bc)
+	echo "${sum}MB/s"
+fi

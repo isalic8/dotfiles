@@ -1,0 +1,12 @@
+#!/bin/bash
+# Prompts user before turning off computer
+
+ans=$(echo -e "poweroff\nreboot\nsuspend\nhibernate\ndoff" | dmenu -i -p "Power option: " -nb '#222222' -nf '#bbbbbb' -sb '#924441' -sf '#eeeeee')
+
+case $ans in
+	poweroff) sudo poweroff ;;
+	reboot) sudo reboot ;;
+	suspend) sudo systemctl suspend;;
+	hibernate) sudo systemctl hibernate;;
+	doff) xset dpms force off;;
+esac

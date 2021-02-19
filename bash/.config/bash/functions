@@ -1,0 +1,263 @@
+#vim: filetype=conf :
+tm() {
+	if [ $# -eq 0 ]; then
+		tmux attach -t 0 || tmux new -s 0
+	elif [ "$1" = "ls" ] || [ "$1" = "l" ]; then
+		tmux ls
+	elif [ "$1" = "k" ]; then
+		tmux kill "$2"
+	elif [ "$1" = "ks" ]; then
+		tmux kill-server
+	else
+		tmux attach -t "$1" || tmux new -s "$1"
+	fi
+}
+
+w(){
+	if [ -z "$1" ]; then
+		w3m ~/.w3m/index.html
+	else
+		w3m "$1"
+	fi
+}
+
+wal-tile() {
+    wal -n -i "$@"
+    feh --bg-tile "$(< "${HOME}/.cache/wal/wal")"
+}
+
+anon-upload(){
+	if [ -z "$1" ]; then
+		echo "Error: Pass a file as an argument"
+		exit
+	fi
+	torsocks curl -sF "file=@$1" https://api.anonfiles.com/upload | \
+		xargs -I % echo "%" | \
+		tr ',' '\n'
+}
+
+anon-info(){
+	if [ -z "$1" ]; then
+		echo "Error: Pass a the file id as an argument"
+		exit
+	fi
+	torsocks curl -s https://api.anonfiles.com/v2/file/$1/info | \
+		xargs -I % echo "%" | \
+		tr ',' '\n'
+}
+
+anon-fetch(){
+	if [ -z "$1" ]; then
+		echo "Error: Pass a the file id as an argument"
+		exit
+	fi
+	echo "Retrieving file url. This could take a moment..."
+	short_url="$(anon-info "$1" | grep full | sed 's;\\/;/;g' | cut -d':' -f2-100 | sed 's/.$//')"
+	echo "Found shortened url: $short_url"
+	long_url=$(curl -s "${short_url}" | grep -E "cdn.*anonfiles.com" | cut -d'"' -f 2)
+	echo "Found found long url: $long_url"
+	echo "DOWNLOADING FILE"
+	curl -O "${long_url}"
+}
+
+wwiki(){
+	case "$1" in
+		arch) torsocks -q w3m https://wiki.archlinux.org/index.php?search="$2" ;;
+		gentoo) torsocks -q w3m https://wiki.gentoo.org/index.php?search="$2" ;;
+		qemu) torsocks -q w3m https://wiki.qemu.org/index.php?search="$2" ;;
+		wiki) torsocks -q w3m https://en.wikipedia.org/w/index.php?search="$2" ;;
+		*) echo "wwiki [arch|wiki|gentoo|qemu] <search term>" ;;
+	esac
+}
+
+ytdl(){
+	case "$1" in
+		# Try to download videos in 720p. Revert to best video if not possible.
+		vid|video|v|mp4)
+			youtube-dl --format 247+251 "$2" || \
+				youtube-dl --format 480p "$2" || \
+				youtube-dl --format 720p "$2" || \
+				youtube-dl "$2"
+			;;
+		x|a|audio|mp3)
+			youtube-dl --extract-audio --audio-format mp3 $2
+			;;
+			'-F')
+			youtube-dl -F "$2" | grep -Ev "video only|audio only"
+
+	esac
+}
+
+weather(){
+	case "$1" in 
+		simple) 
+			case "$2" in
+				'gma') curl -s https://wttr.in/san_jose_california?format="%l:+%c+%t\n" ;;
+				'geo') curl -s wttr.in/"$3"?format="%l:+%c+%t\n" ;;
+				*) curl -s https://wttr.in/95436?format="%l:+%c+%t\n" ;;
+			esac
+			;;
+		*)
+			case "$1" in
+				'gma') curl -s https://wttr.in/san_jose_california ;;
+				'geo') curl -s wttr.in/"$2" ;;
+				*) curl -s https://wttr.in/95436;;
+			esac
+			;;
+	esac
+}
+
+# Self descriptive. Use fzf to cd or edit directories/files
+fuzzyfind(){
+	res=$(find . -maxdepth 7 | fzf --height 15 --header="Jump to location")
+	if [ -f "$res" ]; then
+		read -p "Use file opener? [no] " ans
+		case $ans in
+			[yY][eE][sS]|[yY]) o $res ;;
+			*) nvim $res ;;
+		esac
+	elif [ -d "$res" ]; then
+		cd "$res"
+	fi
+}
+
+stop(){
+	sudo kill $(pgrep $1)
+}
+
+stop-prop(){
+	sudo kill $(xprop | grep -i pid | cut -d'=' -f2)
+}
+
+force-stop(){
+	sudo kill -s KILL $(pgrep $1)
+}
+
+force-stop-prop(){
+	sudo kill -s KILL $(xprop | grep -i pid | cut -d'=' -f2)
+}
+
+# Writes to dvd's. Requires dvd+rw-tools
+dvd-write(){
+	if [ -z "$1" ]; then
+		echo "Usage: /dev/sr0 file.iso"
+	else
+		growisofs -dvd-compat -Z "$1"="$2"
+	fi
+}
+
+tb(){
+	if [ "$1" = "--help" ]; then
+		echo "command [--help|check|50%]"
+	elif [ "$1" = "check" ]; then
+		sudo brightnessctl -d intel_backlight
+	else
+		sudo brightnessctl -d intel_backlight set "$1"
+	fi
+}
+
+pb(){
+	if [ "$1" = "--help" ]; then
+		echo "command [--help|check|50%]"
+	elif [ "$1" = "check" ]; then
+		sudo brightnessctl
+	else
+		sudo brightnessctl set "$1"
+	fi
+}
+
+# Screen record
+screenrecord(){
+	res=$(xdpyinfo  | grep 'dimensions:' | awk '{print $2}')
+	ffmpeg -f x11grab  -i :0.0 -s $res "$1"
+}
+
+# Ip lookup
+iplookup(){
+	if [ -z "$1" ]; then
+		curl ipinfo.io/what-is-my-ip
+	else
+		curl ipinfo.io/$1
+	fi
+}
+
+
+#--Transmission
+tsm() { transmission-remote --list ;}
+tsm-watch() { watch transmission-remote --list ;}
+tsm-watch-clearcompleted() { 
+	while true; do
+		tsm-clearcompleted
+		echo "Cleared torrents...$(date)"
+		sleep 20s
+	done;}
+tsm-clearcompleted() {
+        transmission-remote -l | grep 100% | grep Done | \
+        awk '{print $1}' | xargs -I % transmission-remote -t % -r ;}
+tsm-count() { echo "Blocklist rules:" $(curl -s --data \
+	'{"method": "session-get"}' localhost:9091/transmission/rpc -H \
+	"$(curl -s -D - localhost:9091/transmission/rpc | grep X-Transmission-Session-Id)" \
+	| cut -d: -f 11 | cut -d, -f1) ;} 
+tsm-blocklist() { $PATH_SCRIPTS/blocklist.sh ;}		# update blocklist tsm-daemon() { transmission-daemon ;} tsm-quit() { killall transmission-daemon ;}
+tsm-altspeedenable() { transmission-remote --alt-speed ;}	# limit bandwidth
+tsm-altspeeddisable() {	transmission-remote --no-alt-speed ;}	# dont limit bandwidth
+tsm-add() { transmission-remote --add "$1" ;}
+tsm-askmorepeers() { transmission-remote -t"$1" --reannounce ;}
+tsm-pause() { transmission-remote -t"$1" --stop ;}		# <id> or all
+tsm-start() { transmission-remote -t"$1" --start ;}		# <id> or all
+tsm-purge() { transmission-remote -t"$1" --remove-and-delete ;} # delete data also
+tsm-remove() { transmission-remote -t"$1" --remove ;}		# leaves data alone
+tsm-info() { transmission-remote -t"$1" --info ;}
+tsm-speed() { while true;do clear; transmission-remote -t"$1" -i | grep Speed;sleep 1;done ;}
+
+#--Task-spooler
+tsp-clearcompleted() { tsp -C ;}
+tsp-kill() { tsp -k "$1" ;}
+tsp-kill-server() { tsp -K ;}
+tsp-state() { tsp -s "$1" ;}
+tsp-cat() { tsp -c "$1" ;}
+tsp-info() { tsp -i "$1" ;}
+tsp-first() { tsp -u "$1" ;}
+tsp-swap() { tsp -U "$1-$2" ;}
+
+#--gpg stuff
+gpg-import(){
+	if [ -z "$1" ]; then
+		echo "command pubkey.gpg"
+		exit
+	else
+		gpg2 --import "$1"
+	fi
+	}
+gpg-revoke() { 
+	if [ -z "$2" ]; then
+		echo "command keyid revoke.asc" 
+	else
+		echo "IMPORTING REVOKE.ASC"
+		gpg2 --import "$2"
+		echo "UPLOADING KEYRING TO PGP.MIT.EDU"
+		gpg2 --keyserver keys.gnupg.net --send-keys "$1"
+	fi
+}
+gpg-search-pubkey(){ gpg2 --keyserver http://keys.gnupg.net --recv "$1" ;}
+gpg-list-secret-keys(){ gpg2 --list-secret-keys --keyid-format long ;}
+gpg-fingerprint(){ gpg2 --fingerprint "$1" ;}
+gpg-sign-key(){ gpg2 --sign-key "$1" ;}
+gpg-upload-key(){ gpg2 --keyserver keys.gnupg.net --send-key $1;}
+gpg-list-keys(){ gpg2 --list-keys "$1" ;}
+gpg-export-pubkey(){ gpg2 --output public.pgp --armor --export ;} # Use gpg2 email as arg
+gpg-export-privkey(){ gpg2 --output private.pgp --armor --export-secret-key ;} # Use gpg2 email as arg
+gpg-reload(){ gpg-connect-agent reloadagent /bye ;}
+
+secret-stdout(){
+	if [ -z $2 ]; then
+		echo "Usage: command \"this is a message\" john@doe"
+	else
+		echo "$1" | gpg2 --encrypt --armor -r "$2" -o -
+	fi
+
+}
+
+wg-down(){
+	sudo wg-quick down $(ip a | grep -Eo "mullvad.*:" | tr ':' ' ' | head -n1)
+}

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Simple math for bs=X count=X in dd
+# It doesn't keep track of the unit of measure of your block size
+
+if [ -z "$1" ] || [ -z "$2" ] ; then
+	echo "Usage: command <bs> <count>"
+else
+	echo "$1*$2" | bc
+fi

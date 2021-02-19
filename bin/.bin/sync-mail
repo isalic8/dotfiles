@@ -1,0 +1,11 @@
+#!/bin/sh
+# Download mail with mbsync
+
+while true; do
+	mbsync -a 
+	echo "Mail synced"
+	echo "$(date)"
+	sleep 1m
+done
+
+exit 0
