@@ -24,3 +24,4 @@ device info ; https://www.deviceinfo.me/
 ols ; https://login-learn.k12.com/#login
 avi ; https://www.engr.colostate.edu/me/facil/dynamics/avis.htm
 ycombinator ; https://news.ycombinator.com/news
+localhost ; http://localhost:8888

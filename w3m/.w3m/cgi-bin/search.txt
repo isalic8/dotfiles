@@ -11,3 +11,4 @@ thesarus ; https://en.oxforddictionaries.com/thesaurus/
 invidious ; https://invidious.snopyta.org/search?q=
 invidious yewtube; https://yewtu.be/search?q=
 invidious xyz; https://invidious.xyz/search?q=
+david bowie songs ; https://lite.duckduckgo.com/lite/?q=site:https://bowiesongs.wordpress.com/+

@@ -101,6 +101,7 @@ alias vt='vim ~/dox/todo'
 alias vm='vim ~/dox/music'
 alias poweroff='sudo poweroff'
 alias reboot='sudo reboot'
+alias crypto='curl rate.sx'
 
 alias gls='cd ~/.local/share/'
 alias gH='cd /media/hdd'

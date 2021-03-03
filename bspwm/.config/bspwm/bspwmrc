@@ -28,7 +28,7 @@ bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
 
 bspc rule -a scratchy sticky=on state=floating rectangle=1200x400+360+0
-bspc rule -a Zathura sticky=on state=tiled
+bspc rule -a Zathura state=tiled
  
 #bspc rule -a xfce4-terminal state=floating
 # source the colors.

@@ -228,7 +228,9 @@ let g:floaterm_winblend = 0
 "--Markdown plugin
 let g:instant_markdown_autostart = 0
 let g:instant_markdown_slow = 1
-let g:instant_markdown_browser = "librewolf.appimage --new-window"
+"let g:instant_markdown_port = 8080
+"let g:instant_markdown_browser = "librewolf.appimage --new-window"
+let g:instant_markdown_browser = "firefox"
 
 "--Macros
 "File saving/quiting
@@ -293,4 +295,5 @@ au BufRead,BufNewFile *.tex set filetype=tex
 autocmd FileType tex nmap <leader>av :!zathura<space><c-r>%<backspace><backspace><backspace>pdf<space>&<enter><enter>
 
 autocmd vimenter * wincmd l
+autocmd vimenter * filetype detect
 autocmd BufWrite ~/.Xresources !xrdb -load ~/.Xresources && xrdb -load ~/.Xresources

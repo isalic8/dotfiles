@@ -128,7 +128,7 @@ filextype *.flac,*.mp3,*.ogg
 " Office files
 filextype *.odt,*.doc,*.docx,*.xls,*.xlsx,*.odp,*.pptx setsid -f libreoffice %f &
 fileviewer *.doc catdoc %c
-fileviewer *.docx docx2txt.pl %f -
+fileviewer *.docx docx2txt %f -
 
 " Video files
 fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,

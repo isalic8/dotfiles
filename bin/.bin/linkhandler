@@ -13,7 +13,7 @@ basedir="/tmp/media/"
 
 case "$1" in
 	*mkv|*webm|*mp4|*youtube.com/watch*|*youtube.com/playlist*|*youtu.be*|*hooktube.com*|*bitchute.com*|*/t.co/*)
-		setsid -f mpv -quiet --ytdl-format='best[height<=480]/bestvideo[height<=480]+bestaudio' "$1" || notify-send 'Linkhandler' 'Error occured with link' ;;
+		setsid -f mpv -quiet --ytdl-format='best[height<=480]/bestvideo[height<=480]+bestaudio' "$1" &>/dev/null ;;
 	*png|*jpg|*jpe|*jpeg|*gif)
 		#basename=$(echo "$1" | sed "s/.*\///")
 		#curl -s "$1" -o ${basedir}/${basename} && feh "${basedir}/${basename}"  >/dev/null 2>&1 &
@@ -28,7 +28,8 @@ case "$1" in
 	*)
 		if [ -f "$1" ]; then "$TERMINAL" -e "$EDITOR" "$1"
 		else 
-			setsid st -e web "$1" &>/dev/null &
+			#setsid st -e web "$1" &>/dev/null &
+			echo "$1" | xsel -b && notify-send "Linkhandler" "URL COPIED"
 		fi 
 		;;
 esac

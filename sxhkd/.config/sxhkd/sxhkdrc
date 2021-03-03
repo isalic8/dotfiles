@@ -7,6 +7,9 @@ super + Return
 super + semicolon
 	scratchy
 
+~super + s
+	xdotool key BackSpace type "c"
+
 super + r
 	dmenu_run -i -nb \#000000 -nf \#F3E2A9 -sb \#2E2E2E
 
@@ -16,11 +19,11 @@ super + w
 super + x
 	pbp-cpu-toggle
 
-super + o
-	i3lock -c 000000
+#super + o
+#	i3lock -c 000000
 
-super + shift + o
-	i3lock -c 000000 && loginctl suspend
+#super + shift + o
+#	i3lock -c 000000 && loginctl suspend
 
 super + plus
 	volume up

@@ -21,7 +21,7 @@ pulseaudio &
 xbanish &
 xsetroot -cursor_name left_ptr &
 blueman-applet &
-#sync-mail &
+sync-mail &
 #setxkbmap -option caps:escape &
 
 session=${1:-bspwm}
